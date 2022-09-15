@@ -1,9 +1,5 @@
-負荷テスト実行
-```
-$ docker-compose run --rm k6 run --out csv=/output/script_result.csv - < script.js
-```
-
-influxdb初期化
+# influxdb
+~influxdb初期化~　envに任せるので不要
 ```
 $ docker-compose exec influxdb bash
 root@e6df1c963834:/# influx setup
@@ -31,3 +27,48 @@ influxdbログイン
 http://localhost:8086/orgs/7a13dac9d41e5d25/load-data/file-upload/csv
 サイドバーの`Load Data`を押す
 File UploadのCSV Dataを押す
+
+
+# k6
+
+実行 - 結果の出力先はinfluxdbのコンテナに入る（K6_OUTで指定しているので）
+```
+$ docker-compose run --rm k6 run - < script.js
+```
+
+実行 - 結果の出力先はjsonとinfluxdbになる
+```
+#$ docker-compose run --rm k6 run -o json=/output/result.json -o xk6-influxdb=http://influxdb:8086/k6db - < script.js
+```
+
+実行
+```
+#$ docker-compose run --rm k6 run -o xk6-influxdb=http://influxdb:8086/k6db - < script.js
+```
+
+実行
+```
+$ docker-compose run --rm k6 run --out csv=/output/script_result.csv - < script.js
+```
+
+# grafana
+ログイン
+```
+admin/password
+```
+
+サイドバーの下の方の歯車押す > Data sources > influxdb
+```
+Query Language: Flux
+
+URL: http://influxdb:8086
+Access: Server(default)
+
+
+Header: Authorization
+Value: Token TOKEN_TOKEN
+
+Organization: k6
+Default Bucket: k6db
+```
+Explore
