@@ -52,7 +52,10 @@ services:
   
   #負荷試験のリクエスト先サンプル
   nginx:
-    image: nginx:alpine
+    build: 
+      context: .
+      dockerfile: Nginx
+    container_name: k6-web
     ports:
       - 80:80
 
