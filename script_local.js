@@ -9,6 +9,8 @@ const URLs = {
     '_20x': `http://${FQDN}`,
     '_40x': `http://${FQDN}/404`,
     '_50x': `http://${FQDN}/50x.html`,
+    'post': `http://${FQDN}/post`,
+    'put': `http://${FQDN}/put`,
 };
 
 //https://k6.io/docs/getting-started/running-k6/#stages-ramping-up-down-vus
@@ -37,7 +39,7 @@ export const options = {
             //executor: 'shared-iterations',
             executor: 'per-vu-iterations',//1vuに対してiteration回試行させる
             // https://k6.io/docs/using-k6/scenarios/executors/per-vu-iterations/
-            
+
             exec: 'access20x',
 
             // common scenario configuration
@@ -91,11 +93,12 @@ export const options = {
             vus: 100,
             iterations: 40000,
             maxDuration: '10s',
-            },
+        },
     */
 
 
         //オートスケールのテストするならramping-vusが良いかもしれん
+        /*
         scenario_31: {
             startTime: '5s',
             executor: 'ramping-vus',
@@ -110,6 +113,24 @@ export const options = {
             tags: { 
                 'author': 'l-freeze',
             },
+        },
+        */
+
+        //putのシナリオ
+        scenario_41: {
+            executor: 'per-vu-iterations',
+            exec: 'access_put',
+
+            startTime: '3s',
+            gracefulStop: '0',
+            env: { EXAMPLEVAR: 'testing' },
+            tags: { 
+                'author': 'l-freeze',
+            },  
+
+            vus: 1,
+            iterations: 1,
+            maxDuration: '10s',
         },
     },
 };
@@ -202,6 +223,20 @@ export function access50x(setUpData) {
 
     check(res, { 
         'in status 500': (r) => r.status === 500 ,
+    });
+}
+
+export function access_put(setUpData) {
+    counter.add(1);
+    const payload = JSON.stringify({
+        'email': 'l-freeze@example.com',
+        'password': 'password',
+    });
+    const res = http.put(URLs.put, payload);
+    console.log(res);
+
+    check(res, { 
+        'in status 204': (r) => r.status === 204 ,
     });
 }
 
