@@ -32,6 +32,7 @@ export const options = {
 
 //総アクセス数で負荷掛けるのが普通だろうからexecutorはshared-iterationsが良さそうだ
 export const options = {
+    discardResponseBodies: true,
     scenarios: {
         //100user * 10access
         scenario_01: {
@@ -56,7 +57,6 @@ export const options = {
             maxDuration: '10s',
         },
 
-    /*
         // 2000access/2000user (1user 1access)
         scenario_11: {
             //executor: 'per-vu-iterations',
@@ -94,17 +94,18 @@ export const options = {
             iterations: 40000,
             maxDuration: '10s',
         },
-    */
-
 
         //オートスケールのテストするならramping-vusが良いかもしれん
-        /*
         scenario_31: {
-            startTime: '5s',
+            startTime: '30s',
             executor: 'ramping-vus',
             exec: 'access20x',
             stages: [
                 { duration: '20s', target: 1000 },//20秒掛けて100VUに
+                { duration: '20s', target: 2000 },//20秒掛けて200VUに
+                { duration: '20s', target: 4000 },//20秒掛けて4000VUに
+                { duration: '20s', target: 2000 },//20秒掛けて4000VUに
+                { duration: '10s', target: 1000 },//10秒掛けて1000VUに
                 { duration: '5s', target: 0 },//5秒掛けて0VUに
             ],
             gracefulRampDown: '10s',//0にするとリクエスト中でもぶった切られるので
@@ -114,7 +115,6 @@ export const options = {
                 'author': 'l-freeze',
             },
         },
-        */
 
         //putのシナリオ
         scenario_41: {
@@ -203,6 +203,7 @@ export function access40x(setUpData) {
             'Content-Type': 'application/json',
             'X-token': setUpData.token,
         },
+        //'timeout': 18000000
     }
     const res = http.get(URLs._40x, params);
 
@@ -218,6 +219,7 @@ export function access50x(setUpData) {
             'Content-Type': 'application/json',
             'X-token': setUpData.token,
         },
+        //'timeout': 18000000
     }
     const res = http.get(URLs._50x, params);
 
@@ -232,6 +234,7 @@ export function access_put(setUpData) {
         'email': 'l-freeze@example.com',
         'password': 'password',
     });
+    //const res = http.put(URLs.put, payload, {timeout:1800000});
     const res = http.put(URLs.put, payload);
     console.log(res);
 

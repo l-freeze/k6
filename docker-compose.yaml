@@ -17,6 +17,10 @@ services:
       - DOCKER_INFLUXDB_INIT_ORG=k6
       - DOCKER_INFLUXDB_INIT_BUCKET=k6db
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=TOKEN_TOKEN
+    deploy:
+      resources:
+        limits: 
+          memory: 4gb
 
   grafana:
     image: grafana/grafana
@@ -43,12 +47,16 @@ services:
       - ./results:/output
     environment:
       - K6_OUT=xk6-influxdb=http://influxdb:8086
-      - K6_INFLUXDB_CONCURRENT_WRITES=100
-      - K6_INFLUXDB_PUSH_INTERVAL=10s
+      - K6_INFLUXDB_CONCURRENT_WRITES=16
+      - K6_INFLUXDB_PUSH_INTERVAL=30s
       - K6_INFLUXDB_ORGANIZATION=k6
       - K6_INFLUXDB_BUCKET=k6db
       - K6_INFLUXDB_INSECURE=false
       - K6_INFLUXDB_TOKEN=TOKEN_TOKEN
+    deploy:
+      resources:
+        limits: 
+          memory: 12gb
     profiles:
       - exec-only
   
@@ -60,6 +68,10 @@ services:
     container_name: k6-web
     ports:
       - 80:80
+    deploy:
+      resources:
+        limits: 
+          memory: 2gb
 
 volumes:
   data-influx:

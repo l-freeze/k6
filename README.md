@@ -85,6 +85,12 @@ iterations...シナリオ実行回数
 http_req_failed...文字通りリクエスト失敗の割合か？localだと失敗しないので不明
 ```
 
+テストケースの考え方
+```
+https://k6.io/docs/test-types/introduction/
+を参考に
+```
+
 # grafana
 ログイン
 ```
@@ -106,3 +112,18 @@ Organization: k6
 Default Bucket: k6db
 ```
 Explore
+
+
+
+# ローカルで試す時のコマンドメモ
+```
+$ docker-compose down; docker volume prune -f; docker-compose build --no-cache; docker-compose up -d;
+$ docker-compose run --rm k6 run -o xk6-influxdb=http://influxdb:8086/k6db - < script_local.js
+```
+
+
+# コンテナのメモリー使用量上限確認
+```
+$ docker stats
+```
+上限設定しないで何発もやってたらERROR 137が返されるようになってしまった
